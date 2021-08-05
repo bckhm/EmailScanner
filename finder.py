@@ -17,24 +17,26 @@ def save_excel(matches, filename):
 
 print("--- Ensure that you have copied the text into data.txt---")
 
-# Allows users to select between fidning email addresses/phone numbers
-choice = input("Type N to find phone numbers and E to find emails: ")
 
-if re.search('n', choice, re.IGNORECASE):
-    #pattern to find Singaporean phone numbers
-    pattern = re.compile(r'\d{4}\s*\d{4}')
-    column_name = 'Numbers'
-    matches = find_data(pattern, column_name)
-    save_excel(matches, 'numbers.xlsx')
+# Dictionary that gives varying patterns. column names and file names based on user input
+choice_dict = {'e': [r'[\w._-]*@[\w._-]*\.\w+', 'Email Addresses', 'emails.xlsx'], 'n': [r'\d{4}\s*\d{4}', 'Numbers', 'numbers.xlsx']}
 
-if re.search('e', choice, re.IGNORECASE):
-    #pattern to find email addresses that include '-', '.', '_', numbers and words
-    pattern = re.compile(r'[\w._-]*@[\w._-]*\.\w+')
-    column_name = 'Email Adresses'
-    matches = find_data(pattern, column_name)
-    save_excel(matches, 'emails.xlsx')
+try:
+    # Allows users to select between finding email addresses/phone numbers
+    choice = input("Type N to find phone numbers and E to find emails: ")
+    choice_lower = choice.lower()
+    pattern = re.compile(choice_dict[choice_lower][0])
+except KeyError as e:
+    print(f"You typed {e}, that's not 'E' or 'N'!")
+except Exception:
+    print("Something went wrong")
+else:
+    matches = find_data(pattern, choice_dict[choice_lower][1])
+    save_excel(matches, choice_dict[choice_lower][2])
+finally:
+    exit = input("Press Enter key to exit...")
 
-exit = input("\nPress any key to exit...")
+
 
 
 
